@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "V35 Universal Ghost Pip",
+  "version": "1.0",
+  "description": "強行噴射全域記憶窗口並橫移空間",
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": [
+    "storage"
+  ]
+}
