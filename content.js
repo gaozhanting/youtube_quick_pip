@@ -2,7 +2,22 @@
     'use strict';
     if (document.getElementById('v35-global-cube')) return;
 
-    // 1. 鍛造釘在網頁最頂層的極簡 V35 傳送塊
+    // 核心噴射邏輯（純粹原生畫中畫）
+    async function firePip() {
+        const video = document.querySelector('video');
+        if (!video) return;
+        try {
+            if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture();
+            } else {
+                await video.requestPictureInPicture();
+            }
+        } catch (error) {
+            console.error('V35 PIP 噴射失敗:', error);
+        }
+    }
+
+    // 1. 鍛造懸浮方塊（保留滑鼠點擊做為備用防線）
     const cube = document.createElement('div');
     cube.id = 'v35-global-cube';
     cube.innerHTML = 'PIP';
@@ -11,29 +26,15 @@
         background-color: #ff4500; color: white; font-family: sans-serif;
         font-size: 13px; font-weight: bold; text-align: center; line-height: 45px;
         border-radius: 8px; cursor: pointer; z-index: 999999;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0.8; transition: opacity 0.2s;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0.5; transition: opacity 0.2s;
     `;
+    cube.addEventListener('click', firePip);
+    document.body.appendChild(cube);
 
-    cube.addEventListener('mouseenter', () => cube.style.opacity = '1');
-    cube.addEventListener('mouseleave', () => cube.style.opacity = '0.8');
-
-    // 2. 點擊瞬間，強行逼迫網頁視頻進入原生畫中畫
-    cube.addEventListener('click', async () => {
-        const video = document.querySelector('video');
-        if (!video) return;
-
-        try {
-            // 如果已經在 PIP 狀態，點擊就誠實地退出歸位
-            if (document.pictureInPictureElement) {
-                await document.exitPictureInPicture();
-            } else {
-                // 否則，利用最高權限的人類手勢激活，強行噴射原生 PIP
-                await video.requestPictureInPicture();
-            }
-        } catch (error) {
-            console.error('V35 PIP 噴射失敗:', error);
+    // 2. 監聽來自瀏覽器內核快捷鍵的最高權限密碼
+    chrome.runtime.onMessage.addListener((request) => {
+        if (request.action === "trigger-pip") {
+            firePip();
         }
     });
-
-    document.body.appendChild(cube);
 })();

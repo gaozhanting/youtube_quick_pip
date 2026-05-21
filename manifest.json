@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "V35 Universal Ghost Pip",
-  "version": "1.0",
+  "version": "1.3",
   "description": "強行噴射全域記憶窗口並橫移空間",
   "content_scripts": [
     {
@@ -10,7 +10,16 @@
       "run_at": "document_end"
     }
   ],
-  "permissions": [
-    "storage"
-  ]
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "toggle-v35-pip": {
+      "suggested_key": {
+        "default": "Ctrl+K",
+        "mac": "Ctrl+K"
+      },
+      "description": "V35 強行噴射原生 PIP"
+    }
+  }
 }
